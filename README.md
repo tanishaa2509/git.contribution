@@ -6,8 +6,382 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open Source Contribution Finder</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="index.css">
+    <style>
+      * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #f0f6fc;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #8ae6ff, #ff9cee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #c9d1d9;
+        }
+        
+        .auth-section {
+            background: rgba(22, 27, 34, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        .auth-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+        }
+        .login-btn i{
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        .login-btn:hover {
+            background: rgba(56, 139, 253, 0.1);
+            border-color: #58a6ff;
+        }
+        
+        .signup-btn {
+            background: linear-gradient(90deg, #238636, #2ea043);
+            color: white;
+        }
+        
+        .signup-btn:hover {
+            background: linear-gradient(90deg, #2ea043, #3cb44b);
+            transform: translateY(-2px);
+        }
+        
+        .search-section {
+            background: rgba(22, 27, 34, 0.8);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #8b949e;
+        }
+        
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            background: #0d1117;
+            color: #c9d1d9;
+            font-size: 16px;
+        }
+        
+        .search-btn {
+            background: linear-gradient(90deg, #238636, #2ea043);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .search-btn:hover {
+            background: linear-gradient(90deg, #2ea043, #3cb44b);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 160, 67, 0.3);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #58a6ff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .project-card {
+            background: rgba(22, 27, 34, 0.8);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+        }
+        
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        .card-header h3 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: #58a6ff;
+        }
+        
+        .card-header p {
+            color: #8b949e;
+            font-size: 0.95rem;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .language {
+            display: inline-block;
+            background: rgba(56, 139, 253, 0.15);
+            color: #58a6ff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .issues {
+            margin-top: 15px;
+        }
+        
+        .issue {
+            padding: 10px 0;
+            border-bottom: 1px solid #21262d;
+        }
+        
+        .issue:last-child {
+            border-bottom: none;
+        }
+        
+        .issue a {
+            color: #c9d1d9;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s ease;
+        }
+        
+        .issue a:hover {
+            color: #58a6ff;
+        }
+        
+        .tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        
+        .tag.beginner {
+            background: rgba(46, 160, 67, 0.15);
+            color: #3fb950;
+        }
+        
+        .tag.intermediate {
+            background: rgba(187, 128, 9, 0.15);
+            color: #d29922;
+        }
+        
+        .tag.advanced {
+            background: rgba(248, 81, 73, 0.15);
+            color: #ff7b72;
+        }
+        
+        .card-footer {
+            padding: 15px 20px;
+            background: rgba(13, 17, 23, 0.6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stars, .forks {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+        
+        .view-btn {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .view-btn:hover {
+            background: rgba(56, 139, 253, 0.1);
+            border-color: #58a6ff;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .pagination button {
+            padding: 10px 18px;
+            background: rgba(22, 27, 34, 0.8);
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pagination button:hover {
+            background: rgba(56, 139, 253, 0.1);
+            border-color: #58a6ff;
+        }
+        
+        .pagination button.active {
+            background: rgba(56, 139, 253, 0.2);
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 10px;
+            padding: 20px;
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+        
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap:5px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #3fb950;
+           
+        }
+        
+        @media (max-width: 768px) {
+            .results-section {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .filters {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-section {
+                justify-content: center;
+            }
+        }   
+    </style>
 </head>
+
 <body>
     <div class="container">
         <header>
